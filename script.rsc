@@ -49,39 +49,38 @@ for netw from=1 to=$ifaces do={ tool netwatch add down-script="ip firewall mangl
     \_src-address-list=\"full\"];\r\
     \nsystem script run Failover;" }
 
+#FAILOVER
+system script add dont-require-permissions=yes name=Failover owner=admin policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=":local iface \"wlan1\"\r\
+    \n:local steps 0;\r\
+    \n:local tempSteps 1;\r\
+    \n:local addrs (10.10.0.9,10.10.0.10);\r\
+    \n:local ruleIDs [/ip firewall mangle find new-connection-mark~\"_con\" and disabled=no];\r\
+    \n:local steps ([:len \$ruleIDs ]);\r\
+    \n:foreach ruleID in=\$ruleIDs do {\r\
+    \n    ip firewall mangle set [find .id=\$ruleID] nth=\"\$steps,\$tempSteps\";\r\
+    \n    set tempSteps (\$tempSteps + 1);\r\
+    \n}\r\
+    \nif ([\$steps]=0) do {\r\
+    \n    foreach addr in=\$addrs do {\r\
+    \n        do {\r\
+    \n            if ([ip firewall address-list get value-name=list [find where address=\$addr && comment~\"auto_\"]]=\"full\") do {\r\
+    \n                ip firewall address-list set list=\$iface [find where list=full && comment~\"auto_\"];\r\
+    \n            }\r\
+    \n        } on-error {\r\
+    \n            log warning \"Ocurrio un error recuperando \$addr de la lista\";\r\
+    \n        }\r\
+    \n    }\r\
+    \n} else {\r\
+    \n    foreach addr in=\$addrs do {\r\
+    \n        do {\r\
+    \n            if ([ip firewall address-list get value-name=list [find where address=\$addr && comment~\"auto_\"]]=\$iface) do {\r\
+    \n                ip firewall address-list set list=full [find where list=\$iface && comment~\"auto_\"];\r\
+    \n            }\r\
+    \n        } on-error {\r\
+    \n            log warning \"Ocurrio un error recuperando \$addr de la lista\";\r\
+    \n        }\r\
+    \n    }\r\
+    \n}"
+    
 foreach var in=[system script environment find] do={ system script environment remove $var }
 system scheduler add name=init start-time=startup on-event="delay 5;\r\ \nsystem script run Failover;"
-
-#FAILOVER
-:local iface "wlan1"
-:local steps 0;
-:local tempSteps 1;
-:local addrs (10.10.0.9,10.10.0.10);
-:local ruleIDs [/ip firewall mangle find new-connection-mark~"_con" and disabled=no];
-:local ruleIDs [/ip firewall mangle find comment=NTH and disabled=no];
-:local steps ([:len $ruleIDs ]);
-:foreach ruleID in=$ruleIDs do {
-    ip firewall mangle set [find .id=$ruleID] nth="$steps,$tempSteps";
-    set tempSteps ($tempSteps + 1);
-}
-if ([$steps]=0) do {
-    foreach addr in=$addrs do {
-        do {
-            if ([ip firewall address-list get value-name=list [find where address=$addr && comment="auto"]]="full") do {
-                ip firewall address-list set list=$iface [find where list=full && comment="auto"];
-            }
-        } on-error {
-            log warning "Ocurrio un error recuperando $addr de la lista";
-        }
-    }
-} else {
-    foreach addr in=$addrs do {
-        do {
-            if ([ip firewall address-list get value-name=list [find where address=$addr && comment="auto"]]=$iface) do {
-                ip firewall address-list set list=full [find where list=$iface && comment="auto"];
-            }
-        } on-error {
-            log warning "Ocurrio un error recuperando $addr de la lista";
-        }
-    }
-}
