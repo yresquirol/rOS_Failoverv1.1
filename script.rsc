@@ -30,7 +30,7 @@ ip dns set servers=181.225.231.110,181.225.231.120,181.225.233.30,181.225.233.40
 for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" src-address-list="$prefix$rule" chain=prerouting dst-address-type=!local passthrough=yes }
 for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-connection new-connection-mark="$prefix$rule_con" chain=prerouting passthrough=yes nth=1,1 dst-address-type=!local disabled=yes src-address-list="full" connection-state=new; ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" connection-mark="$prefix$rule_con" chain=prerouting src-address-list="full" dst-address-type=!local passthrough=no}
 ip firewall mangle set comment="MARCADO DE RUTAS PARA CADA INTERFAZ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=0
-ip firewall mangle set comment="MARCADO DE PAQUETES PARA NTH  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=8
+ip firewall mangle set comment="MARCADO DE CONEXIONES Y RUTAS PARA NTH  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=8
 
 
 #FIREWALL NAT
