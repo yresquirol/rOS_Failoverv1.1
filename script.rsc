@@ -9,7 +9,7 @@
 for route from=2 to=$ifaces do={ :set $rootRoute ($rootRoute,"$gw%$prefix$route") }
 
 #SET CLIENTS INTERFACES
-interface wireless set $mIface ssid=$ssid disabled=no
+interface wireless set $mIface ssid=$ssid disabled=no mode=station frequency-mode=superchannel country=no_country_set channel-width=20mhz wireless-protocol=802.11 station-roaming=disabled
 for iface from=2 to=$ifaces  do={ interface wireless add ssid=$ssid master-interface=$mIface mode=station name="$prefix$iface" disabled=no }
 
 #SET IP ADDRESS CONFIGURATION AND DHCP SERVER
