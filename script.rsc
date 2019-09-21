@@ -21,7 +21,7 @@ ip dhcp-server add address-pool=LANsubnet interface=ether1 lease-time=1d name=dh
 ip dhcp-server network add address=10.10.0.0/24 dns-server=10.10.0.1 gateway=10.10.0.1 netmask=24
 
 #SET DHCP CLIENTS
-for iface from=1 to=$ifaces do={ ip dhcp-client add interface="$prefix$iface" use-peer-dns=no use-peer-ntp=no disabled=no }
+for iface from=1 to=$ifaces do={ ip dhcp-client add interface="$prefix$iface" use-peer-dns=no use-peer-ntp=no disabled=no add-default-route=no }
 
 #SET DNS SERVERS
 ip dns set servers=181.225.231.110,181.225.231.120,181.225.233.30,181.225.233.40 allow-remote-requests=yes
