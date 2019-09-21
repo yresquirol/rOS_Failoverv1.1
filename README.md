@@ -21,4 +21,4 @@ Este script te permite configurar tu MikroTik (si tiene licencia L4) para hacer 
 :global ssid "WIFI_ETECSA" --->>>>>> por su puesto este es el SSID de los AP de ETECSA. Si te conectas a traves de un hotel u otro establecimiento que tenga otro nombre puedes cambiarlo <b>(solo lo que esta entre "").</b>
 
 <b>Te recomiendo usar el video como guía luego de haber editado el script y configurado las variables.</b>
-<b>Video:<b> https://youtu.be/UvgebCWrY4c
+<b>Video:<b> https://youtu.be/FjWB87W_Uao
