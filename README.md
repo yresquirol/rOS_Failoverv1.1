@@ -1,6 +1,8 @@
 # rOS_Failover V1.2
 Configura Mikrotik para multi WAN + balanceo NTH + failover
 
+<b>Para descargar use el botón verde de arriba a la derecha (Clone or download)</b>
+
 Este script te permite configurar tu MikroTik (si tiene licencia L4) para hacer multi WAN (lo que se conoce como multi portales) además, ofrece balanceo para los usuarios (IP) que pertenezcan a la lista "wlan1" aplicando failover sobre las interfaces.
 
 <b>Como usar el script:</b>
