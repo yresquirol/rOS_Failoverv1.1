@@ -84,7 +84,7 @@ system script add dont-require-permissions=yes name=Failover owner=admin policy=
 
 
 #PING ETECSA FOR EACH INTERFACE, IF IT DOESN'T RESPOND THEN RENEW THE IP
-system script add dont-require-permissions=yes name=renewByPing owner=admin policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="foreach iface in=[interface wireless registration-table find] do {\r\
+system script add dont-require-permissions=yes name=renewByPing owner=admin policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source="foreach iface in=[interface wireless registration-table find ap=yes] do {\r\
     \n    :local iName [interface wireless registration-table get value-name=interface [find .id=\$iface]];\r\
     \n    if ([ping 10.180.0.30 count=3 interface=\$iName]=0) do {\r\
     \n        ip dhcp-client renew [find interface=\$iName];\r\
