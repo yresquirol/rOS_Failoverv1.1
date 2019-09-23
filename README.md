@@ -1,4 +1,4 @@
-# rOS_Failover V1.2
+# rOS_Failover V1.1
 Configura Mikrotik para multi WAN + balanceo NTH + failover
 
 <b>Para descargar use el botón verde de arriba a la derecha (Clone or download)</b>
