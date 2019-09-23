@@ -1,5 +1,6 @@
 #SET VARIABLES
-:global ifaces 8;
+:global host ""
+:global ifaces 8
 :global mIface "wlan1"
 :global prefix "wlan"
 :global gw 10.204.10.1
@@ -42,9 +43,9 @@ for route from=1 to=$ifaces do={ ip route add gateway="$gw%$prefix$route" dst-ad
 ip route add gateway=$rootRoute dst-address=0.0.0.0/0 comment=for_router
 
 #NETWATCH
-for netw from=1 to=$ifaces do={ tool netwatch add down-script="ip firewall mangle disable [find new-connection-mark=$prefix$netw_con \
-    and src-address-list=\"full\"];\r\
-    \nsystem script run Failover;" host="1.1.1.10$netw" interval=5s timeout=3s \
+for netw from=1 to=$ifaces do={ if ([$netw]>9) do={:set host "1.1.1.1$netw"} else={:set host "1.1.1.10$netw"}; tool netwatch add down-script="ip firewall mangle disable \
+    [find new-connection-mark=$prefix$netw_con and src-address-list=\"full\"];\r\
+    \nsystem script run Failover;" host="$host" interval=5s timeout=3s \
     up-script="ip firewall mangle enable [find new-connection-mark=$prefix$netw_con and\
     \_src-address-list=\"full\"];\r\
     \nsystem script run Failover;" }
