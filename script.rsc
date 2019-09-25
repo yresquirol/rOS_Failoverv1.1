@@ -92,7 +92,13 @@ system script add dont-require-permissions=yes name=renewByPing owner=admin poli
     \n    }\r\
     \n}"
 
+#SET RULE RUTES FOR DNS
+for rule from=1 to=$ifaces do={ ip route rule add dst-address=181.225.231.110/32 table="$prefix$rule" }
+for rule from=1 to=$ifaces do={ ip route rule add dst-address=181.225.231.120/32 table="$prefix$rule" }
+for rule from=1 to=$ifaces do={ ip route rule add dst-address=181.225.233.30/32 table="$prefix$rule" }
+for rule from=1 to=$ifaces do={ ip route rule add dst-address=181.225.233.40/32 table="$prefix$rule" }
 
+#FINISHING CONFIGURATION
 foreach var in=[system script environment find] do={ system script environment remove $var }
 system scheduler add name=init start-time=startup on-event="delay 5;\r\ \nsystem script run Failover;"
 system scheduler add name=refreshInterface start-time=startup interval=1m on-event="system script run renewByPing;"
