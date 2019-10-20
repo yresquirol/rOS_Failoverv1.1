@@ -29,16 +29,16 @@ ip dns set servers=181.225.231.110,181.225.231.120,181.225.233.30,181.225.233.40
 
 #FIREWALL MANGLE
 for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" src-address-list="$prefix$rule" chain=prerouting dst-address-type=!local passthrough=yes }
-for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-connection new-connection-mark="$prefix$rule_con" chain=prerouting passthrough=yes nth=1,1 dst-address-type=!local disabled=yes src-address-list="full" connection-state=new; ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" connection-mark="$prefix$rule_con" chain=prerouting src-address-list="full" dst-address-type=!local passthrough=yes}
+for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-connection new-connection-mark="$prefix$rule_con" chain=prerouting passthrough=yes nth=1,1 disabled=yes src-address-list="full" dst-address-type=!local connection-state=new; ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" connection-mark="$prefix$rule_con" chain=prerouting src-address-list="full" passthrough=yes}
 ip firewall mangle set comment="MARCADO DE RUTAS PARA CADA INTERFAZ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=0
-ip firewall mangle set comment="MARCADO DE CONEXIONES Y RUTAS PARA NTH  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=8
+ip firewall mangle set comment="MARCADO DE CONEXIONES Y RUTAS PARA NTH  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=$ifaces
 
 #FIREWALL NAT
 for nat from=1 to=$ifaces do={ ip firewall nat add chain=srcnat action=masquerade routing-mark="$prefix$nat" out-interface="$prefix$nat" }
 
 #ROUTES
 for route from=1 to=$ifaces do={ ip route add gateway="$gw%$prefix$route" dst-address=0.0.0.0/0 routing-mark="$prefix$route" }
-for route from=1 to=$ifaces do={ if ([$netw]>9) do={:set host "1.1.1.1$route"} else={:set host "1.1.1.10$route"}; ip route add gateway="$gw%$prefix$route" dst-address="$host" }
+for route from=1 to=$ifaces do={ if ([$route]>9) do={:set host "1.1.1.1$route"} else={:set host "1.1.1.10$route"}; ip route add gateway="$gw%$prefix$route" dst-address="$host" }
 ip route add gateway=$rootRoute dst-address=0.0.0.0/0 comment=for_router
 
 #NETWATCH
