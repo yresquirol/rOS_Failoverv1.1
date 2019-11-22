@@ -29,7 +29,7 @@ ip dns set servers=181.225.231.110,181.225.231.120,181.225.233.30,181.225.233.40
 
 #FIREWALL MANGLE
 for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" src-address-list="$prefix$rule" chain=prerouting dst-address-type=!local passthrough=yes }
-for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-connection new-connection-mark="$prefix$rule_con" chain=prerouting passthrough=yes nth=1,1 disabled=yes src-address-list="full" dst-address-type=!local connection-mark=no-mark; ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" connection-mark="$prefix$rule_con" chain=prerouting src-address-list="full" passthrough=yes}
+for rule from=1 to=$ifaces do={ ip firewall mangle add action=mark-connection new-connection-mark="$prefix$rule_conNTH" chain=prerouting passthrough=yes nth=1,1 disabled=yes src-address-list="full" dst-address-type=!local connection-mark=no-mark; ip firewall mangle add action=mark-routing new-routing-mark="$prefix$rule" connection-mark="$prefix$rule_conNTH" chain=prerouting src-address-list="full" passthrough=yes}
 ip firewall mangle set comment="MARCADO DE RUTAS PARA CADA INTERFAZ >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=0
 ip firewall mangle set comment="MARCADO DE CONEXIONES Y RUTAS PARA NTH  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" numbers=$ifaces
 
@@ -43,9 +43,9 @@ ip route add gateway=$rootRoute dst-address=0.0.0.0/0 comment=for_router
 
 #NETWATCH
 for netw from=1 to=$ifaces do={ if ([$netw]>9) do={:set host "1.1.1.1$netw"} else={:set host "1.1.1.10$netw"}; tool netwatch add down-script="ip firewall mangle disable \
-    [find new-connection-mark=$prefix$netw_con and src-address-list=\"full\"];\r\
+    [find new-connection-mark=$prefix$netw_conNTH and src-address-list=\"full\"];\r\
     \nsystem script run Failover;" host="$host" interval=5s timeout=3s \
-    up-script="ip firewall mangle enable [find new-connection-mark=$prefix$netw_con and\
+    up-script="ip firewall mangle enable [find new-connection-mark=$prefix$netw_conNTH and\
     \_src-address-list=\"full\"];\r\
     \nsystem script run Failover;" }
 
@@ -54,7 +54,7 @@ system script add dont-require-permissions=yes name=Failover owner=admin policy=
     \n:local steps 0;\r\
     \n:local tempSteps 1;\r\
     \n:local addrs (10.10.0.9,10.10.0.10);\r\
-    \n:local ruleIDs [/ip firewall mangle find new-connection-mark~\"_con\" and disabled=no];\r\
+    \n:local ruleIDs [/ip firewall mangle find new-connection-mark~\"_conNTH\" and disabled=no];\r\
     \n:local steps ([:len \$ruleIDs ]);\r\
     \n:foreach ruleID in=\$ruleIDs do {\r\
     \n    ip firewall mangle set [find .id=\$ruleID] nth=\"\$steps,\$tempSteps\";\r\
