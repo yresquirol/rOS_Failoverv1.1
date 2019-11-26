@@ -19,7 +19,7 @@ for iface from=2 to=$ifaces  do={ interface wireless add ssid=$ssid master-inter
 ip address add address="$lanAddress/24" interface=ether1
 ip pool add name=LANsubnet ranges="$startIP-$endIP"
 ip dhcp-server add address-pool=LANsubnet interface=ether1 lease-time=1d name=dhcpLAN disabled=no
-ip dhcp-server network add address="($lanAddress - 1)/24" dns-server=$lanAddress gateway=$lanAddress netmask=24
+ip dhcp-server network add address=(($lanAddress - 1)."/24") dns-server=$lanAddress gateway=$lanAddress netmask=24
 
 #SET DHCP CLIENTS
 for iface from=1 to=$ifaces do={ ip dhcp-client add interface="$prefix$iface" use-peer-dns=no use-peer-ntp=no disabled=no add-default-route=no }
