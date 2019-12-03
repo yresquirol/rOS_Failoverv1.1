@@ -50,36 +50,23 @@ for netw from=1 to=$ifaces do={ if ([$netw]>9) do={:set host "1.1.1.1$netw"} els
     \nsystem script run Failover;" }
 
 #FAILOVER
-system script add dont-require-permissions=yes name=Failover owner=admin policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=":local iface \"wlan1\"\r\
+system script add dont-require-permissions=yes name=Failover owner=admin policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=":local iface \"wlan1\";\r\
     \n:local steps 0;\r\
     \n:local tempSteps 1;\r\
-    \n:local addrs (10.10.0.9,10.10.0.10);\r\
-    \n:local ruleIDs [/ip firewall mangle find new-connection-mark~\"_conNTH\" and disabled=no];\r\
+    \n:local ruleIDs [/ip firewall mangle find new-connection-mark~\"_conNTH\"\
+    \_and disabled=no];\r\
     \n:local steps ([:len \$ruleIDs ]);\r\
     \n:foreach ruleID in=\$ruleIDs do {\r\
-    \n    ip firewall mangle set [find .id=\$ruleID] nth=\"\$steps,\$tempSteps\";\r\
+    \n    ip firewall mangle set [find .id=\$ruleID] nth=\"\$steps,\$tempSteps\
+    \";\r\
     \n    set tempSteps (\$tempSteps + 1);\r\
     \n}\r\
     \nif ([\$steps]=0) do {\r\
-    \n    foreach addr in=\$addrs do {\r\
-    \n        do {\r\
-    \n            if ([ip firewall address-list get value-name=list [find where address=\$addr && comment~\"auto_\"]]=\"full\") do {\r\
-    \n                ip firewall address-list set list=\$iface [find where list=full && comment~\"auto_\"];\r\
-    \n            }\r\
-    \n        } on-error {\r\
-    \n            log warning \"Ocurrio un error recuperando \$addr de la lista\";\r\
-    \n        }\r\
-    \n    }\r\
+    \n    ip firewall address-list set [find comment~\"auto_\" and list=\"full\
+    \"] list=\$iface;\r\
     \n} else {\r\
-    \n    foreach addr in=\$addrs do {\r\
-    \n        do {\r\
-    \n            if ([ip firewall address-list get value-name=list [find where address=\$addr && comment~\"auto_\"]]=\$iface) do {\r\
-    \n                ip firewall address-list set list=full [find where list=\$iface && comment~\"auto_\"];\r\
-    \n            }\r\
-    \n        } on-error {\r\
-    \n            log warning \"Ocurrio un error recuperando \$addr de la lista\";\r\
-    \n        }\r\
-    \n    }\r\
+    \n    ip firewall address-list set [find comment~\"auto_\" and list=\$ifac\
+    e] list=full;\r\
     \n}"
 
 
